@@ -1,0 +1,45 @@
+name: CI/CD Pipeline Multiregion
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_ACCOUNT: "357834747308"
+
+jobs:
+  ci-terraform-pre-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+      
+      - name: tree repository
+        run: tree .
+        working-directory: ./pre-deployment
+      
+      - name: terraform format check
+        run: terraform fmt --recursive --check
+        working-directory: ./pre-deployment
+      
+      - name: terraform init
+        run: terraform init -backend-config=environment/backend.tfvars
+        working-directory: ./pre-deployment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+      
+      - name: terraform validate
+        run: terraform validate
+        working-directory: ./pre-deployment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
