@@ -5,7 +5,7 @@ set -e
 echo "INICIANDO ROLLOUT DO PRE-DEPLOYMENT"
 
 cd pre-deployment/
-# rm -rf .terraform
+rm -rf .terraform
 terraform init -backend-config=environment/backend.tfvars
 terraform apply --auto-approve -var-file=environment/terraform.tfvars
 
@@ -43,7 +43,7 @@ cd ../
 echo "INICIANDO ROLLOUT DO POST-DEPLOYMENT"
 
 cd post-deployment/
-# rm -rf .terraform
+rm -rf .terraform
 terraform init -backend-config=environment/backend.tfvars
 terraform apply --auto-approve -var-file=environment/terraform.tfvars
 
